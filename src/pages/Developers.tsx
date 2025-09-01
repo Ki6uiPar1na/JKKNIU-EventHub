@@ -2,7 +2,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Github, Linkedin, Mail, Code, Palette, Database, Cpu } from "lucide-react";
+import { Github, Linkedin, Mail, Palette, Globe } from "lucide-react";
 
 const developers = [
   {
@@ -17,9 +17,10 @@ const developers = [
       email: "Ki6uiPar1na@proton.me",
       github: "Ki6uiPar1na",
       linkedin: "mdkhairulislamtushar",
+      portfolio: "https://ki6uipar1na.vercel.app/",
     },
-    icon: Code,
-    image: "/img/khairul.jpeg",  // 👈 add image path
+    icon: Palette,
+    image: "/img/khairul.jpeg",
   },
   {
     id: 2,
@@ -33,13 +34,12 @@ const developers = [
       email: "khanornob20@gmail.com",
       github: "monoNai",
       linkedin: "ornob-khan-bb268a284",
+      portfolio: "https://ornobkhan.dev",
     },
-    icon: Code,
-    image: "/img/ornob.jpg",  // 👈 add image path
+    icon: Palette,
+    image: "/img/ornob.jpg",
   }
 ];
-
-
 
 const Developers = () => {
   return (
@@ -95,7 +95,6 @@ const Developers = () => {
                     </div>
                   </CardHeader>
 
-                  
                   <CardContent className="space-y-6">
                     {/* Bio */}
                     <p className="text-muted-foreground">{dev.bio}</p>
@@ -119,19 +118,24 @@ const Developers = () => {
                     <div>
                       <h4 className="font-semibold mb-3">Contact</h4>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="icon" asChild className="hover:glow-primary">
+                        <Button variant="outline" size="icon" asChild className="hover:glow-primary" title="Email">
                           <a href={`mailto:${dev.contact.email}`} target="_blank" rel="noopener noreferrer">
                             <Mail className="w-4 h-4" />
                           </a>
                         </Button>
-                        <Button variant="outline" size="icon" asChild className="hover:glow-primary">
+                        <Button variant="outline" size="icon" asChild className="hover:glow-primary" title="GitHub">
                           <a href={`https://github.com/${dev.contact.github}`} target="_blank" rel="noopener noreferrer">
                             <Github className="w-4 h-4" />
                           </a>
                         </Button>
-                        <Button variant="outline" size="icon" asChild className="hover:glow-primary">
+                        <Button variant="outline" size="icon" asChild className="hover:glow-primary" title="LinkedIn">
                           <a href={`https://linkedin.com/in/${dev.contact.linkedin}`} target="_blank" rel="noopener noreferrer">
                             <Linkedin className="w-4 h-4" />
+                          </a>
+                        </Button>
+                        <Button variant="outline" size="icon" asChild className="hover:glow-primary" title="Portfolio">
+                          <a href={dev.contact.portfolio} target="_blank" rel="noopener noreferrer">
+                            <Globe className="w-4 h-4" />
                           </a>
                         </Button>
                       </div>
