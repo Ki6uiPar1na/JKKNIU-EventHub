@@ -220,7 +220,7 @@ if (!rollRegex.test(formData.roll)) {
                       value={formData.roll}
                       onChange={(e) => handleInputChange("roll", e.target.value)}
                       className={errors.roll ? "border-error" : ""}
-                      placeholder="e.g., 2021-1-60-001"
+                      placeholder="e.g., 22102017"
                     />
                   </div>
 
