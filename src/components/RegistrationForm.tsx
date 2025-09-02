@@ -33,7 +33,7 @@ const RegistrationForm = () => {
   const { toast } = useToast();
 
   const eventTypes = ["CTF"];
-  const sessions = ["2021-22", "2022-23", "2023-24"];
+  const sessions = ["2021-22", "2022-23", "2023-24", "2024-25"];
   const departments = ["CSE", "Others"];
 
   const validateForm = (): boolean => {
