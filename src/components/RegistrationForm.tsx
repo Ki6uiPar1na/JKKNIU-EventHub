@@ -26,6 +26,7 @@ interface RegistrationData {
   gender: "Male" | "Female" | "";
   paymentMethod: string;
   codeforceHandle: string;
+  codechefHandle: string;
   vjudgeHandle: string;
 }
 
@@ -37,6 +38,7 @@ const RegistrationForm: React.FC = () => {
     gender: "",
     paymentMethod: "",
     codeforceHandle: "",
+    codechefHandle: "",
     vjudgeHandle: "",
   });
 
@@ -64,6 +66,8 @@ const RegistrationForm: React.FC = () => {
     if (!formData.gender) newErrors.gender = "Gender is required";
     if (!formData.paymentMethod)
       newErrors.paymentMethod = "Payment method is required";
+    if (!formData.codeforceHandle.trim()) newErrors.codeforceHandle = "Codeforces handle is required";
+    if (!formData.codechefHandle.trim()) newErrors.codechefHandle = "CodeChef handle is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -87,6 +91,7 @@ const RegistrationForm: React.FC = () => {
       gender: "entry.2081839725",
       paymentMethod: "entry.47691962",
       codeforceHandle: "entry.185925211",
+      codechefHandle: "entry.9999999999",
       vjudgeHandle: "entry.1427272081",
     };
 
@@ -100,7 +105,8 @@ const RegistrationForm: React.FC = () => {
     formDataToSubmit.append(entryMap.gender, formData.gender);
     formDataToSubmit.append(entryMap.paymentMethod, formData.paymentMethod);
     formDataToSubmit.append(entryMap.codeforceHandle, formData.codeforceHandle);
-    formDataToSubmit.append(entryMap.vjudgeHandle, formData.vjudgeHandle);
+  formDataToSubmit.append(entryMap.codechefHandle, formData.codechefHandle);
+  formDataToSubmit.append(entryMap.vjudgeHandle, formData.vjudgeHandle);
 
     try {
       await fetch(formResponseUrl, {
@@ -141,6 +147,7 @@ const RegistrationForm: React.FC = () => {
         gender: "",
         paymentMethod: "",
         codeforceHandle: "",
+        codechefHandle: "",
         vjudgeHandle: "",
       });
     } else {
@@ -291,27 +298,39 @@ const RegistrationForm: React.FC = () => {
                 {/* Handles */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="codeforceHandle">Codeforces Handle</Label>
+                    <Label htmlFor="codeforceHandle">Codeforces Handle *</Label>
                     <Input
                       id="codeforceHandle"
                       value={formData.codeforceHandle}
                       onChange={(e) =>
                         handleInputChange("codeforceHandle", e.target.value)
                       }
-                      placeholder="Codeforces username (optional)"
+                      className={errors.codeforceHandle ? "border-error" : ""}
+                      placeholder="Codeforces username"
                     />
+                    {errors.codeforceHandle && (
+                      <p className="text-error text-sm flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" /> {errors.codeforceHandle}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="vjudgeHandle">Vjudge Handle</Label>
+                    <Label htmlFor="codechefHandle">CodeChef Handle *</Label>
                     <Input
-                      id="vjudgeHandle"
-                      value={formData.vjudgeHandle}
+                      id="codechefHandle"
+                      value={formData.codechefHandle}
                       onChange={(e) =>
-                        handleInputChange("vjudgeHandle", e.target.value)
+                        handleInputChange("codechefHandle", e.target.value)
                       }
-                      placeholder="Vjudge username (optional)"
+                      className={errors.codechefHandle ? "border-error" : ""}
+                      placeholder="CodeChef username"
                     />
+                    {errors.codechefHandle && (
+                      <p className="text-error text-sm flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" /> {errors.codechefHandle}
+                      </p>
+                    )}
                   </div>
                 </div>
 

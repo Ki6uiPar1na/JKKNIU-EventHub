@@ -18,7 +18,7 @@ const HeroSection = () => {
           {/* Badge */}
           <div className="inline-flex items-center space-x-2 bg-surface-variant/50 backdrop-blur-sm border border-border rounded-full px-4 py-2 mb-8">
             <Trophy className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">Beginner CTF 2025</span>
+            <span className="text-sm font-medium">Mid Day Recruit 2025 - Registration</span>
           </div>
 
           {/* Main Heading */}
