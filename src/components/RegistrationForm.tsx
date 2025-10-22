@@ -1,107 +1,109 @@
-import { useState } from "react";
+import React, { useState, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
-interface FormData {
+interface RegistrationData {
   fullName: string;
-  session: string;
-  department: string;
   roll: string;
-  eventType: string;
-  phone: string;
-  email: string;
+  registrationNumber: string;
+  gender: "Male" | "Female" | "";
+  paymentMethod: string;
+  codeforceHandle: string;
+  vjudgeHandle: string;
 }
 
-const RegistrationForm = () => {
-  const [formData, setFormData] = useState<FormData>({
+const RegistrationForm: React.FC = () => {
+  const [formData, setFormData] = useState<RegistrationData>({
     fullName: "",
-    session: "",
-    department: "",
     roll: "",
-    eventType: "",
-    phone: "",
-    email: "",
+    registrationNumber: "",
+    gender: "",
+    paymentMethod: "",
+    codeforceHandle: "",
+    vjudgeHandle: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof RegistrationData, string>>
+  >({});
   const { toast } = useToast();
 
-  const eventTypes = ["CTF"];
-  const sessions = ["2021-22", "2022-23", "2023-24", "2024-25"];
-  const departments = ["CSE", "Others"];
+  const paymentMethods = ["Cash - CR"];
+  const genders = ["Male", "Female"];
 
   const validateForm = (): boolean => {
-  const newErrors: Partial<FormData> = {};
+    const newErrors: Partial<Record<keyof RegistrationData, string>> = {};
 
-  // Full Name: Only alphabets and spaces
-  if (!formData.fullName.trim()) {
-    newErrors.fullName = "Full name is required";
-  } else if (!/^[A-Za-z\s]+$/.test(formData.fullName)) {
-    newErrors.fullName = "Full name must contain only alphabets";
-  }
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Full name is required";
+    } else if (!/^[A-Za-z\s]+$/.test(formData.fullName)) {
+      newErrors.fullName = "Full name must contain only alphabets";
+    }
 
-  if (!formData.session) newErrors.session = "Session is required";
-  if (!formData.department) newErrors.department = "Department is required";
-  if (!formData.eventType) newErrors.eventType = "Event type is required";
+    if (!formData.roll.trim()) newErrors.roll = "Roll number is required";
+    if (!formData.registrationNumber.trim())
+      newErrors.registrationNumber = "Registration number is required";
+    if (!formData.gender) newErrors.gender = "Gender is required";
+    if (!formData.paymentMethod)
+      newErrors.paymentMethod = "Payment method is required";
 
-  // Roll number validation
-if (!formData.roll.trim()) {
-  newErrors.roll = "Roll number is required";
-} else {
-  const sessionYear = formData.session.split("-")[1].slice(-2); // e.g., 2021-22 -> "22"
-const rollRegex = new RegExp(`^${sessionYear}\\d{6}$`);
-if (!rollRegex.test(formData.roll)) {
-  newErrors.roll = `Roll must be 8 digits starting with session year: ${sessionYear}XXXXXX`;
-}
-}
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-
-  // Phone: Bangladesh 11-digit number starting with 01[3-9]
-  if (!formData.phone.trim()) {
-    newErrors.phone = "Phone number is required";
-  } else if (!/^01[3-9]\d{8}$/.test(formData.phone)) {
-    newErrors.phone = "Phone number must be a valid BD number (11 digits, starts with 01)";
-  }
-
-  // Email validation
-  if (!formData.email.trim()) {
-    newErrors.email = "Email is required";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-    newErrors.email = "Invalid email format";
-  }
-
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
-
-
-
-  const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) setErrors(prev => ({ ...prev, [field]: undefined }));
+  const handleInputChange = (field: keyof RegistrationData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
   const submitToGoogleForms = async () => {
-    const googleFormUrl =
-      "https://docs.google.com/forms/d/e/1FAIpQLSfUDSgfNDtALGfNMJ_zzHXrX1eQkCfVOSBKocLB68JUiU2WVA/formResponse";
+    const viewUrl =
+      "https://docs.google.com/forms/d/e/1FAIpQLSfA6MeCkrmSvluHbPd-udsT6c5noJhf07l1xgTUc4wZpP09pw/viewform";
+    const formResponseUrl = viewUrl.replace("/viewform", "/formResponse");
+
+    // Replace with actual entry IDs from your Google Form
+    const entryMap: Record<keyof RegistrationData, string> = {
+      fullName: "entry.1613976863",
+      roll: "entry.2105077340",
+      registrationNumber: "entry.221189295",
+      gender: "entry.2081839725",
+      paymentMethod: "entry.47691962",
+      codeforceHandle: "entry.185925211",
+      vjudgeHandle: "entry.1427272081",
+    };
 
     const formDataToSubmit = new FormData();
-    formDataToSubmit.append("entry.1836682711", formData.fullName);
-    formDataToSubmit.append("entry.111053289", formData.session);
-    formDataToSubmit.append("entry.2023555666", formData.department);
-    formDataToSubmit.append("entry.1183827453", formData.roll);
-    formDataToSubmit.append("entry.1318942523", formData.eventType);
-    formDataToSubmit.append("entry.2144218566", formData.phone);
-    formDataToSubmit.append("entry.1782893864", formData.email);
+    formDataToSubmit.append(entryMap.fullName, formData.fullName);
+    formDataToSubmit.append(entryMap.roll, formData.roll);
+    formDataToSubmit.append(
+      entryMap.registrationNumber,
+      formData.registrationNumber
+    );
+    formDataToSubmit.append(entryMap.gender, formData.gender);
+    formDataToSubmit.append(entryMap.paymentMethod, formData.paymentMethod);
+    formDataToSubmit.append(entryMap.codeforceHandle, formData.codeforceHandle);
+    formDataToSubmit.append(entryMap.vjudgeHandle, formData.vjudgeHandle);
 
     try {
-      await fetch(googleFormUrl, {
+      await fetch(formResponseUrl, {
         method: "POST",
         mode: "no-cors",
         body: formDataToSubmit,
@@ -113,7 +115,7 @@ if (!rollRegex.test(formData.roll)) {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
       toast({
@@ -134,12 +136,12 @@ if (!rollRegex.test(formData.roll)) {
       });
       setFormData({
         fullName: "",
-        session: "",
-        department: "",
         roll: "",
-        eventType: "",
-        phone: "",
-        email: "",
+        registrationNumber: "",
+        gender: "",
+        paymentMethod: "",
+        codeforceHandle: "",
+        vjudgeHandle: "",
       });
     } else {
       toast({
@@ -159,21 +161,23 @@ if (!rollRegex.test(formData.roll)) {
           <Card className="bg-card/50 backdrop-blur-sm border-border shadow-elevated">
             <CardHeader className="text-center">
               <CardTitle className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                Event Registration
+                Mid Day Recruit 2025 - Registration
               </CardTitle>
               <CardDescription className="text-muted-foreground">
-                Fill out the form below to register for our upcoming tech events
+                Fill out the form below to register
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Full Name */}
+                {/* Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name *</Label>
+                  <Label htmlFor="fullName">Name *</Label>
                   <Input
                     id="fullName"
                     value={formData.fullName}
-                    onChange={(e) => handleInputChange("fullName", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("fullName", e.target.value)
+                    }
                     className={errors.fullName ? "border-error" : ""}
                     placeholder="Enter your full name"
                   />
@@ -184,37 +188,10 @@ if (!rollRegex.test(formData.roll)) {
                   )}
                 </div>
 
-                {/* Session & Department */}
+                {/* Roll & Registration Number */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="session">Session *</Label>
-                    <Select value={formData.session} onValueChange={(v) => handleInputChange("session", v)}>
-                      <SelectTrigger className={errors.session ? "border-error" : ""}>
-                        <SelectValue placeholder="Select session" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {sessions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="department">Department *</Label>
-                    <Select value={formData.department} onValueChange={(v) => handleInputChange("department", v)}>
-                      <SelectTrigger className={errors.department ? "border-error" : ""}>
-                        <SelectValue placeholder="Select department" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {departments.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Roll & Event Type */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="roll">Roll Number *</Label>
+                    <Label htmlFor="roll">Roll *</Label>
                     <Input
                       id="roll"
                       value={formData.roll}
@@ -222,61 +199,136 @@ if (!rollRegex.test(formData.roll)) {
                       className={errors.roll ? "border-error" : ""}
                       placeholder="e.g., 22102017"
                     />
+                    {errors.roll && (
+                      <p className="text-error text-sm flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" /> {errors.roll}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="eventType">Event Type *</Label>
-                    <Select value={formData.eventType} onValueChange={(v) => handleInputChange("eventType", v)}>
-                      <SelectTrigger className={errors.eventType ? "border-error" : ""}>
-                        <SelectValue placeholder="Select event type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {eventTypes.map((e) => <SelectItem key={e} value={e}>{e}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="registrationNumber">
+                      Registration Number *
+                    </Label>
+                    <Input
+                      id="registrationNumber"
+                      value={formData.registrationNumber}
+                      onChange={(e) =>
+                        handleInputChange("registrationNumber", e.target.value)
+                      }
+                      className={errors.registrationNumber ? "border-error" : ""}
+                      placeholder="Registration number"
+                    />
+                    {errors.registrationNumber && (
+                      <p className="text-error text-sm flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />{" "}
+                        {errors.registrationNumber}
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                {/* Phone & Email */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-  <div className="space-y-2">
-    <Label htmlFor="phone">Phone Number *</Label>
-    <Input
-      id="phone"
-      type="text"              // Preserve leading 0
-      value={formData.phone}
-      onChange={(e) => handleInputChange("phone", e.target.value)}
-      className={errors.phone ? "border-error" : ""}
-      placeholder="01XXXXXXXXX"
-      maxLength={11}           // Optional: ensures max 11 digits
-    />
-    {errors.phone && (
-      <p className="text-error text-sm flex items-center gap-2">
-        <AlertCircle className="w-4 h-4" /> {errors.phone}
-      </p>
-    )}
-  </div>
+                {/* Gender & Payment Method */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="gender">Gender *</Label>
+                    <Select
+                      value={formData.gender}
+                      onValueChange={(v) =>
+                        handleInputChange("gender", v as RegistrationData["gender"])
+                      }
+                    >
+                      <SelectTrigger
+                        className={errors.gender ? "border-error" : ""}
+                      >
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {genders.map((g) => (
+                          <SelectItem key={g} value={g}>
+                            {g}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.gender && (
+                      <p className="text-error text-sm flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" /> {errors.gender}
+                      </p>
+                    )}
+                  </div>
 
-  <div className="space-y-2">
-    <Label htmlFor="email">Email Address *</Label>
-    <Input
-      id="email"
-      value={formData.email}
-      onChange={(e) => handleInputChange("email", e.target.value)}
-      className={errors.email ? "border-error" : ""}
-      placeholder="john@example.com"
-    />
-  </div>
-</div>
+                  <div className="space-y-2">
+                    <Label htmlFor="paymentMethod">Payment Method *</Label>
+                    <Select
+                      value={formData.paymentMethod}
+                      onValueChange={(v) =>
+                        handleInputChange("paymentMethod", v)
+                      }
+                    >
+                      <SelectTrigger
+                        className={errors.paymentMethod ? "border-error" : ""}
+                      >
+                        <SelectValue placeholder="Select payment method" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {paymentMethods.map((p) => (
+                          <SelectItem key={p} value={p}>
+                            {p}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.paymentMethod && (
+                      <p className="text-error text-sm flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />{" "}
+                        {errors.paymentMethod}
+                      </p>
+                    )}
+                  </div>
+                </div>
 
+                {/* Handles */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="codeforceHandle">Codeforces Handle</Label>
+                    <Input
+                      id="codeforceHandle"
+                      value={formData.codeforceHandle}
+                      onChange={(e) =>
+                        handleInputChange("codeforceHandle", e.target.value)
+                      }
+                      placeholder="Codeforces username (optional)"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="vjudgeHandle">Vjudge Handle</Label>
+                    <Input
+                      id="vjudgeHandle"
+                      value={formData.vjudgeHandle}
+                      onChange={(e) =>
+                        handleInputChange("vjudgeHandle", e.target.value)
+                      }
+                      placeholder="Vjudge username (optional)"
+                    />
+                  </div>
+                </div>
 
                 <Button
                   type="submit"
                   disabled={isSubmitting}
                   className="w-full bg-gradient-primary hover:opacity-90 glow-primary text-lg py-6 flex justify-center items-center gap-2"
                 >
-                  {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" /> Registering...</> 
-                  : <><CheckCircle className="w-5 h-5" /> Register Now</>}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" /> Registering...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-5 h-5" /> Register Now
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>
