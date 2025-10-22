@@ -1,58 +1,43 @@
-import React, { useState, FormEvent } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
-interface RegistrationData {
+interface FormData {
   fullName: string;
   roll: string;
   registrationNumber: string;
   gender: "Male" | "Female" | "";
   paymentMethod: string;
   codeforceHandle: string;
-  codechefHandle: string;
   vjudgeHandle: string;
 }
 
-const RegistrationForm: React.FC = () => {
-  const [formData, setFormData] = useState<RegistrationData>({
+const RegistrationForm = () => {
+  const [formData, setFormData] = useState<FormData>({
     fullName: "",
     roll: "",
     registrationNumber: "",
     gender: "",
     paymentMethod: "",
     codeforceHandle: "",
-    codechefHandle: "",
     vjudgeHandle: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof RegistrationData, string>>
-  >({});
+  // errors should map form fields to string messages, not reuse FormData types
+  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const { toast } = useToast();
 
-  const paymentMethods = ["Cash - CR"];
+  const paymentMethods = ["Cash - CR", "Bkash", "Rocket", "Nagad"]; // adjust as needed
   const genders = ["Male", "Female"];
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof RegistrationData, string>> = {};
+  const newErrors: Partial<Record<keyof FormData, string>> = {};
 
     if (!formData.fullName.trim()) {
       newErrors.fullName = "Full name is required";
@@ -61,52 +46,45 @@ const RegistrationForm: React.FC = () => {
     }
 
     if (!formData.roll.trim()) newErrors.roll = "Roll number is required";
-    if (!formData.registrationNumber.trim())
-      newErrors.registrationNumber = "Registration number is required";
+    if (!formData.registrationNumber.trim()) newErrors.registrationNumber = "Registration number is required";
     if (!formData.gender) newErrors.gender = "Gender is required";
-    if (!formData.paymentMethod)
-      newErrors.paymentMethod = "Payment method is required";
-    if (!formData.codeforceHandle.trim()) newErrors.codeforceHandle = "Codeforces handle is required";
-    if (!formData.codechefHandle.trim()) newErrors.codechefHandle = "CodeChef handle is required";
+    if (!formData.paymentMethod) newErrors.paymentMethod = "Payment method is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: keyof RegistrationData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
+  const handleInputChange = (field: keyof FormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: undefined }));
   };
 
   const submitToGoogleForms = async () => {
+    // Replace view URL below with the target form view URL if different
     const viewUrl =
       "https://docs.google.com/forms/d/e/1FAIpQLSfA6MeCkrmSvluHbPd-udsT6c5noJhf07l1xgTUc4wZpP09pw/viewform";
     const formResponseUrl = viewUrl.replace("/viewform", "/formResponse");
 
-    // Replace with actual entry IDs from your Google Form
-    const entryMap: Record<keyof RegistrationData, string> = {
-      fullName: "entry.1613976863",
+    // TODO: Replace the placeholder entry IDs below with the real entry IDs from your Google Form.
+    // To get entry IDs: open the form, inspect the input element name attributes (name="entry.XXXXXXXX")
+    const entryMap: Record<keyof FormData, string> = {
+      fullName: "entry.1613976863",           // e.g. entry.1234567890
       roll: "entry.2105077340",
       registrationNumber: "entry.221189295",
       gender: "entry.2081839725",
       paymentMethod: "entry.47691962",
       codeforceHandle: "entry.185925211",
-      codechefHandle: "entry.9999999999",
       vjudgeHandle: "entry.1427272081",
     };
 
     const formDataToSubmit = new FormData();
     formDataToSubmit.append(entryMap.fullName, formData.fullName);
     formDataToSubmit.append(entryMap.roll, formData.roll);
-    formDataToSubmit.append(
-      entryMap.registrationNumber,
-      formData.registrationNumber
-    );
+    formDataToSubmit.append(entryMap.registrationNumber, formData.registrationNumber);
     formDataToSubmit.append(entryMap.gender, formData.gender);
     formDataToSubmit.append(entryMap.paymentMethod, formData.paymentMethod);
     formDataToSubmit.append(entryMap.codeforceHandle, formData.codeforceHandle);
-  formDataToSubmit.append(entryMap.codechefHandle, formData.codechefHandle);
-  formDataToSubmit.append(entryMap.vjudgeHandle, formData.vjudgeHandle);
+    formDataToSubmit.append(entryMap.vjudgeHandle, formData.vjudgeHandle);
 
     try {
       await fetch(formResponseUrl, {
@@ -121,7 +99,7 @@ const RegistrationForm: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
       toast({
@@ -147,7 +125,6 @@ const RegistrationForm: React.FC = () => {
         gender: "",
         paymentMethod: "",
         codeforceHandle: "",
-        codechefHandle: "",
         vjudgeHandle: "",
       });
     } else {
@@ -182,9 +159,7 @@ const RegistrationForm: React.FC = () => {
                   <Input
                     id="fullName"
                     value={formData.fullName}
-                    onChange={(e) =>
-                      handleInputChange("fullName", e.target.value)
-                    }
+                    onChange={(e) => handleInputChange("fullName", e.target.value)}
                     className={errors.fullName ? "border-error" : ""}
                     placeholder="Enter your full name"
                   />
@@ -206,32 +181,19 @@ const RegistrationForm: React.FC = () => {
                       className={errors.roll ? "border-error" : ""}
                       placeholder="e.g., 22102017"
                     />
-                    {errors.roll && (
-                      <p className="text-error text-sm flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4" /> {errors.roll}
-                      </p>
-                    )}
+                    {errors.roll && <p className="text-error text-sm flex items-center gap-2"><AlertCircle className="w-4 h-4" /> {errors.roll}</p>}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="registrationNumber">
-                      Registration Number *
-                    </Label>
+                    <Label htmlFor="registrationNumber">Registration Number *</Label>
                     <Input
                       id="registrationNumber"
                       value={formData.registrationNumber}
-                      onChange={(e) =>
-                        handleInputChange("registrationNumber", e.target.value)
-                      }
+                      onChange={(e) => handleInputChange("registrationNumber", e.target.value)}
                       className={errors.registrationNumber ? "border-error" : ""}
                       placeholder="Registration number"
                     />
-                    {errors.registrationNumber && (
-                      <p className="text-error text-sm flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4" />{" "}
-                        {errors.registrationNumber}
-                      </p>
-                    )}
+                    {errors.registrationNumber && <p className="text-error text-sm flex items-center gap-2"><AlertCircle className="w-4 h-4" /> {errors.registrationNumber}</p>}
                   </div>
                 </div>
 
@@ -239,98 +201,51 @@ const RegistrationForm: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="gender">Gender *</Label>
-                    <Select
-                      value={formData.gender}
-                      onValueChange={(v) =>
-                        handleInputChange("gender", v as RegistrationData["gender"])
-                      }
-                    >
-                      <SelectTrigger
-                        className={errors.gender ? "border-error" : ""}
-                      >
+                    <Select value={formData.gender} onValueChange={(v) => handleInputChange("gender", v as FormData["gender"])}>
+                      <SelectTrigger className={errors.gender ? "border-error" : ""}>
                         <SelectValue placeholder="Select gender" />
                       </SelectTrigger>
                       <SelectContent>
-                        {genders.map((g) => (
-                          <SelectItem key={g} value={g}>
-                            {g}
-                          </SelectItem>
-                        ))}
+                        {genders.map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                    {errors.gender && (
-                      <p className="text-error text-sm flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4" /> {errors.gender}
-                      </p>
-                    )}
+                    {errors.gender && <p className="text-error text-sm flex items-center gap-2"><AlertCircle className="w-4 h-4" /> {errors.gender}</p>}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="paymentMethod">Payment Method *</Label>
-                    <Select
-                      value={formData.paymentMethod}
-                      onValueChange={(v) =>
-                        handleInputChange("paymentMethod", v)
-                      }
-                    >
-                      <SelectTrigger
-                        className={errors.paymentMethod ? "border-error" : ""}
-                      >
+                    <Select value={formData.paymentMethod} onValueChange={(v) => handleInputChange("paymentMethod", v)}>
+                      <SelectTrigger className={errors.paymentMethod ? "border-error" : ""}>
                         <SelectValue placeholder="Select payment method" />
                       </SelectTrigger>
                       <SelectContent>
-                        {paymentMethods.map((p) => (
-                          <SelectItem key={p} value={p}>
-                            {p}
-                          </SelectItem>
-                        ))}
+                        {paymentMethods.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                    {errors.paymentMethod && (
-                      <p className="text-error text-sm flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4" />{" "}
-                        {errors.paymentMethod}
-                      </p>
-                    )}
+                    {errors.paymentMethod && <p className="text-error text-sm flex items-center gap-2"><AlertCircle className="w-4 h-4" /> {errors.paymentMethod}</p>}
                   </div>
                 </div>
 
                 {/* Handles */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="codeforceHandle">Codeforces Handle *</Label>
+                    <Label htmlFor="codeforceHandle">Codeforce Handle</Label>
                     <Input
                       id="codeforceHandle"
                       value={formData.codeforceHandle}
-                      onChange={(e) =>
-                        handleInputChange("codeforceHandle", e.target.value)
-                      }
-                      className={errors.codeforceHandle ? "border-error" : ""}
-                      placeholder="Codeforces username"
+                      onChange={(e) => handleInputChange("codeforceHandle", e.target.value)}
+                      placeholder="Codeforce username required"
                     />
-                    {errors.codeforceHandle && (
-                      <p className="text-error text-sm flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4" /> {errors.codeforceHandle}
-                      </p>
-                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="codechefHandle">CodeChef Handle *</Label>
+                    <Label htmlFor="vjudgeHandle">Vjudge Handle</Label>
                     <Input
-                      id="codechefHandle"
-                      value={formData.codechefHandle}
-                      onChange={(e) =>
-                        handleInputChange("codechefHandle", e.target.value)
-                      }
-                      className={errors.codechefHandle ? "border-error" : ""}
-                      placeholder="CodeChef username"
+                      id="vjudgeHandle"
+                      value={formData.vjudgeHandle}
+                      onChange={(e) => handleInputChange("vjudgeHandle", e.target.value)}
+                      placeholder="Vjudge username required"
                     />
-                    {errors.codechefHandle && (
-                      <p className="text-error text-sm flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4" /> {errors.codechefHandle}
-                      </p>
-                    )}
                   </div>
                 </div>
 
@@ -339,15 +254,8 @@ const RegistrationForm: React.FC = () => {
                   disabled={isSubmitting}
                   className="w-full bg-gradient-primary hover:opacity-90 glow-primary text-lg py-6 flex justify-center items-center gap-2"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" /> Registering...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="w-5 h-5" /> Register Now
-                    </>
-                  )}
+                  {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" /> Registering...</> 
+                  : <><CheckCircle className="w-5 h-5" /> Register Now</>}
                 </Button>
               </form>
             </CardContent>
