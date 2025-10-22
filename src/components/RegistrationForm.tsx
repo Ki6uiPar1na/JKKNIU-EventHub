@@ -33,7 +33,7 @@ const RegistrationForm = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const { toast } = useToast();
 
-  const paymentMethods = ["Cash - CR", "Bkash", "Rocket", "Nagad"]; // adjust as needed
+  const paymentMethods = ["Cash - CR"]; // adjust as needed
   const genders = ["Male", "Female"];
 
   const validateForm = (): boolean => {
