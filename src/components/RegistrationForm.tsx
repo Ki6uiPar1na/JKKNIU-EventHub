@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, Copy } from "lucide-react";
 
 interface FormData {
   fullName: string;
@@ -15,6 +15,7 @@ interface FormData {
   paymentMethod: string;
   codeforceHandle: string;
   vjudgeHandle: string;
+  transactionId: string;
 }
 
 const RegistrationForm = () => {
@@ -26,6 +27,7 @@ const RegistrationForm = () => {
     paymentMethod: "",
     codeforceHandle: "",
     vjudgeHandle: "",
+    transactionId: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,8 +35,9 @@ const RegistrationForm = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const { toast } = useToast();
 
-  const paymentMethods = ["Cash - CR"]; // adjust as needed
+  const paymentMethods = ["Cash - CR", "bKash - 01306220829"]; // added bKash payment option
   const genders = ["Male", "Female"];
+  const BKASH_NUMBER = "01306220829";
 
   const validateForm = (): boolean => {
   const newErrors: Partial<Record<keyof FormData, string>> = {};
@@ -49,6 +52,11 @@ const RegistrationForm = () => {
     if (!formData.registrationNumber.trim()) newErrors.registrationNumber = "Registration number is required";
     if (!formData.gender) newErrors.gender = "Gender is required";
     if (!formData.paymentMethod) newErrors.paymentMethod = "Payment method is required";
+
+    // If bKash selected, transaction id is required
+    if (formData.paymentMethod && formData.paymentMethod.toLowerCase().includes("bkash") && !formData.transactionId.trim()) {
+      newErrors.transactionId = "Transaction ID is required for bKash payments";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -75,6 +83,8 @@ const RegistrationForm = () => {
       paymentMethod: "entry.47691962",
       codeforceHandle: "entry.185925211",
       vjudgeHandle: "entry.1427272081",
+      // TODO: replace with your Google Form's entry ID for the transaction id field
+      transactionId: "entry.2007854264",
     };
 
     const formDataToSubmit = new FormData();
@@ -85,6 +95,10 @@ const RegistrationForm = () => {
     formDataToSubmit.append(entryMap.paymentMethod, formData.paymentMethod);
     formDataToSubmit.append(entryMap.codeforceHandle, formData.codeforceHandle);
     formDataToSubmit.append(entryMap.vjudgeHandle, formData.vjudgeHandle);
+    // Append transaction id (if configured in entryMap)
+    if (entryMap.transactionId) {
+      formDataToSubmit.append(entryMap.transactionId, formData.transactionId);
+    }
 
     try {
       await fetch(formResponseUrl, {
@@ -126,6 +140,7 @@ const RegistrationForm = () => {
         paymentMethod: "",
         codeforceHandle: "",
         vjudgeHandle: "",
+        transactionId: "",
       });
     } else {
       toast({
@@ -145,11 +160,34 @@ const RegistrationForm = () => {
           <Card className="bg-card/50 backdrop-blur-sm border-border shadow-elevated">
             <CardHeader className="text-center">
               <CardTitle className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                Mid Day Recruit 2025 - Registration
+                Mid Day Recruit 2026 - Registration
               </CardTitle>
               <CardDescription className="text-muted-foreground">
                 Fill out the form below to register
               </CardDescription>
+
+              {/* bKash number notice (top) */}
+              <div className="mt-4 flex items-center justify-center gap-3">
+                <p className="text-sm text-foreground">
+                  Pay via bKash:
+                  <span className="ml-2 font-semibold">{BKASH_NUMBER}</span>
+                </p>
+                <Button
+                  type="button"
+                  className="py-1 px-2 text-sm"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(BKASH_NUMBER);
+                      toast({ title: "Copied", description: "bKash number copied to clipboard." });
+                    } catch (err) {
+                      console.error(err);
+                      toast({ title: "Copy failed", description: "Unable to copy number.", variant: "destructive" });
+                    }
+                  }}
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -202,7 +240,7 @@ const RegistrationForm = () => {
                   <div className="space-y-2">
                     <Label htmlFor="gender">Gender *</Label>
                     <Select value={formData.gender} onValueChange={(v) => handleInputChange("gender", v as FormData["gender"])}>
-                      <SelectTrigger className={errors.gender ? "border-error" : ""}>
+                      <SelectTrigger className={errors.gender ? "border-error bg-popover" : "border-input bg-popover"}>
                         <SelectValue placeholder="Select gender" />
                       </SelectTrigger>
                       <SelectContent>
@@ -215,14 +253,31 @@ const RegistrationForm = () => {
                   <div className="space-y-2">
                     <Label htmlFor="paymentMethod">Payment Method *</Label>
                     <Select value={formData.paymentMethod} onValueChange={(v) => handleInputChange("paymentMethod", v)}>
-                      <SelectTrigger className={errors.paymentMethod ? "border-error" : ""}>
+                      <SelectTrigger className={errors.paymentMethod ? "border-error bg-popover" : "border-input bg-popover"}>
                         <SelectValue placeholder="Select payment method" />
                       </SelectTrigger>
                       <SelectContent>
                         {paymentMethods.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                    {errors.paymentMethod && <p className="text-error text-sm flex items-center gap-2"><AlertCircle className="w-4 h-4" /> {errors.paymentMethod}</p>}
+                                    {errors.paymentMethod && <p className="text-error text-sm flex items-center gap-2"><AlertCircle className="w-4 h-4" /> {errors.paymentMethod}</p>}
+
+                                    {/* If bKash selected, show transaction id input */}
+                                    {formData.paymentMethod && formData.paymentMethod.toLowerCase().includes("bkash") && (
+                                      <div className="mt-2 space-y-2">
+                                        <Label htmlFor="transactionId">bKash Transaction ID *</Label>
+                                        <Input
+                                          id="transactionId"
+                                          value={formData.transactionId}
+                                          onChange={(e) => handleInputChange("transactionId", e.target.value)}
+                                          className={errors.transactionId ? "border-error" : ""}
+                                          placeholder="Enter bKash transaction id"
+                                        />
+                                        {errors.transactionId && (
+                                          <p className="text-error text-sm flex items-center gap-2"><AlertCircle className="w-4 h-4" /> {errors.transactionId}</p>
+                                        )}
+                                      </div>
+                                    )}
                   </div>
                 </div>
 
