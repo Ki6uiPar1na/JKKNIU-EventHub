@@ -41,6 +41,7 @@ const Register = () => {
                 <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                   <li>Open to eligible participants</li>
                   <li>Submit basic info and payment details</li>
+                  <li><strong>Fee:</strong> 200 Tk</li>
                 </ul>
               </CardContent>
               <CardFooter>
@@ -67,6 +68,7 @@ const Register = () => {
                 <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                   <li>Open for all (within JKKNIU)</li>
                   <li>Includes status check and bKash option</li>
+                  <li><strong>Fee:</strong> 250 Tk</li>
                 </ul>
               </CardContent>
               <CardFooter>

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle, AlertCircle, Copy } from "lucide-react";
 
@@ -38,6 +39,7 @@ const RegistrationForm = () => {
   const paymentMethods = ["Cash - CR", "bKash - 01306220829"]; // added bKash payment option
   const genders = ["Male", "Female"];
   const BKASH_NUMBER = "01306220829";
+  const REGISTRATION_FEE_TK = 200;
 
   const validateForm = (): boolean => {
   const newErrors: Partial<Record<keyof FormData, string>> = {};
@@ -165,6 +167,11 @@ const RegistrationForm = () => {
               <CardDescription className="text-muted-foreground">
                 Fill out the form below to register
               </CardDescription>
+
+              {/* Fee notice */}
+              <div className="mt-2 flex items-center justify-center">
+                <Badge className="bg-gradient-primary text-primary-foreground">Registration Fee: {REGISTRATION_FEE_TK} Tk</Badge>
+              </div>
 
               {/* bKash number notice (top) */}
               <div className="mt-4 flex items-center justify-center gap-3">

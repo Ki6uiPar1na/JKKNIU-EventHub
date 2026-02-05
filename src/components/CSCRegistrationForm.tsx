@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle, AlertCircle, Copy } from "lucide-react";
@@ -25,6 +26,7 @@ interface FormData {
 }
 
 const BKASH_NUMBER = "01916493404"; // TODO: replace if CSC uses a different number
+const REGISTRATION_FEE_TK = 250;
 
 const SESSION_OPTIONS = [
   "2020-21",
@@ -177,6 +179,11 @@ const CSCRegistrationForm = () => {
               <CardDescription className="text-muted-foreground">
                 Open for all (within JKKNIU). Fill out the form below.
               </CardDescription>
+
+              {/* Fee notice */}
+              <div className="mt-2 flex items-center justify-center">
+                <Badge className="bg-gradient-primary text-primary-foreground">Registration Fee: {REGISTRATION_FEE_TK} Tk</Badge>
+              </div>
 
               {/* bKash number notice */}
               <div className="mt-4 flex items-center justify-center gap-3">
