@@ -7,6 +7,8 @@ import Index from "./pages/Index";
 import Register from "./pages/Register";
 import Developers from "./pages/Developers";
 import Contact from "./pages/Contact";
+import CSCRegister from "./pages/CSCRegister";
+import MiddayRegister from "./pages/MiddayRegister";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +22,10 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/csc-register" element={<CSCRegister />} />
+          {/* Club Recruitment grouped paths */}
+          <Route path="/club-recruitment/midday" element={<MiddayRegister />} />
+          <Route path="/club-recruitment/csc" element={<CSCRegister />} />
           <Route path="/developers" element={<Developers />} />
           <Route path="/contact" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

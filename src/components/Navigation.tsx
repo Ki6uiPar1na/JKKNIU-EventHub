@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calendar, Users, Code, Mail } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Menu, X, Calendar, Users, Code, Mail, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Navigation = () => {
@@ -9,7 +10,7 @@ const Navigation = () => {
 
   const navItems = [
     { path: "/", label: "Home", icon: Calendar },
-    { path: "/register", label: "Register", icon: Calendar },
+    // { path: "/register", label: "Register", icon: Calendar },
     { path: "/developers", label: "Developers", icon: Code },
     { path: "/contact", label: "Contact", icon: Mail },
   ];
@@ -48,6 +49,38 @@ const Navigation = () => {
                 </Button>
               );
             })}
+
+            {/* Club Recruitment dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant={(isActive("/club-recruitment/midday") || isActive("/club-recruitment/csc")) ? "default" : "ghost"}
+                  className="transition-smooth hover:glow-primary flex items-center gap-2"
+                >
+                  <Users className="w-4 h-4" />
+                  <span>Club Recruitment</span>
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              {/* Ensure visible background and contrast */}
+              <DropdownMenuContent
+                align="end"
+                className="min-w-[220px] bg-card/95 text-foreground backdrop-blur-md border-border shadow-elevated"
+              >
+                <DropdownMenuItem asChild>
+                  <Link to="/club-recruitment/midday" className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>Midday Recruit</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/club-recruitment/csc" className="flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    <span>CSC Recruitment</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Mobile Menu Button */}
@@ -82,6 +115,30 @@ const Navigation = () => {
                   </Button>
                 );
               })}
+
+              {/* Mobile: Club Recruitment links */}
+              <Button
+                variant={(isActive("/club-recruitment/midday") || isActive("/club-recruitment/csc")) ? "default" : "ghost"}
+                asChild
+                className="justify-start transition-smooth"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Link to="/club-recruitment/midday" className="flex items-center space-x-2">
+                  <Calendar className="w-4 h-4" />
+                  <span>Club Recruitment — Midday</span>
+                </Link>
+              </Button>
+              <Button
+                variant={(isActive("/club-recruitment/midday") || isActive("/club-recruitment/csc")) ? "default" : "ghost"}
+                asChild
+                className="justify-start transition-smooth"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Link to="/club-recruitment/csc" className="flex items-center space-x-2">
+                  <Users className="w-4 h-4" />
+                  <span>Club Recruitment — CSC</span>
+                </Link>
+              </Button>
             </div>
           </div>
         )}
