@@ -166,4 +166,24 @@
   .transition-bounce {
     transition: var(--transition-bounce);
   }
+
+  /* Horizontal marquee for running registrations */
+  .marquee-container {
+    overflow: hidden;
+    width: 100%;
+  }
+  .marquee-track {
+    display: flex;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    animation: marquee 30s linear infinite;
+  }
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }

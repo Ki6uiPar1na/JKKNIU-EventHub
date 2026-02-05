@@ -20,6 +20,10 @@ const HeroSection = () => {
             <Trophy className="w-4 h-4 text-primary" />
             <span className="text-sm font-medium">Mid Day Recruit 2026 - Registration</span>
           </div>
+          <div className="ml-4 inline-flex items-center space-x-2 bg-surface-variant/50 backdrop-blur-sm border border-border rounded-full px-4 py-2 mb-8">
+            <Trophy className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium">JKKNIU Cyber Security Club - Recruit 2026</span>
+          </div>
 
           {/* Main Heading */}
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
